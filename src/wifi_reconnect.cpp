@@ -45,7 +45,7 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t e
 }
 
 // NOTE it is intentionally done via background task, and not using events, since it is more reliable
-static void wifi_reconnect_task(void *)
+[[noreturn]] static void wifi_reconnect_task(void *)
 {
   uint8_t failures = 0;
 
