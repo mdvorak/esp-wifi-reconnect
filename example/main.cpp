@@ -23,6 +23,7 @@ void setup()
 	ESP_ERROR_CHECK(ret);
 
 	// Check double reset
+	// NOTE this should be called as soon as possible, ideally right after nvs init
 	bool reconfigure = false;
 	ESP_ERROR_CHECK(double_reset_start(&reconfigure, 5000));
 
