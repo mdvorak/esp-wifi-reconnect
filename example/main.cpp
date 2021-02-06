@@ -4,6 +4,8 @@
 #include <wifi_reconnect.h>
 #include <nvs_flash.h>
 
+static const char TAG[] = "example";
+
 void setup()
 {
 	esp_log_level_set("wifi", ESP_LOG_WARN);
@@ -33,7 +35,7 @@ void setup()
 	ESP_ERROR_CHECK(wifi_reconnect_start());
 
 	// Setup complete
-	ESP_LOGI("example", "started");
+	ESP_LOGI(TAG, "started");
 }
 
 void loop()
