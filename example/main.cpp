@@ -70,7 +70,7 @@ void loop()
 	vTaskDelay(1);
 }
 
-extern "C" [[noreturn]] void app_main()
+extern "C" _Noreturn void app_main()
 {
 	setup();
 	for (;;)
