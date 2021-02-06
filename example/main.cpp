@@ -3,14 +3,13 @@
 #include <esp_log.h>
 #include <wifi_reconnect.h>
 #include <nvs_flash.h>
-#include <string.h>
 
 void setup()
 {
 	esp_log_level_set("wifi", ESP_LOG_WARN);
 	esp_log_level_set("wifi_reconnect", ESP_LOG_DEBUG);
 
-	// Initialize WPS
+	// Initialize NVS
 	esp_err_t ret = nvs_flash_init();
 	if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
 	{
