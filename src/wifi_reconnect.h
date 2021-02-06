@@ -24,6 +24,10 @@ extern "C"
         wifi_reconnect_enable(true);
     }
 
+    bool wifi_reconnect_is_connected();
+
+    bool wifi_reconnect_is_ssid_stored();
+
 #ifdef __cplusplus
 }
 #endif

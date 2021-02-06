@@ -3,6 +3,7 @@
 #include <esp_log.h>
 #include <wifi_reconnect.h>
 #include <nvs_flash.h>
+#include <auto_wps.h>
 
 static const char TAG[] = "example";
 

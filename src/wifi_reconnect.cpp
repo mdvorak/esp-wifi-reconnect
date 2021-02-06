@@ -15,7 +15,7 @@ static uint32_t connect_timeout = WIFI_RECONNECT_CONNECT_TIMEOUT;
 
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
 
-static bool is_ssid_stored(wifi_config_t &conf)
+static inline bool is_ssid_stored(wifi_config_t &conf)
 {
   esp_err_t err = esp_wifi_get_config(WIFI_IF_STA, &conf);
   return err == ESP_OK && conf.sta.ssid[0] != '\0';
@@ -125,4 +125,16 @@ void wifi_reconnect_enable(bool enable)
     xEventGroupClearBits(wifi_event_group, RECONNECT_BIT);
     ESP_LOGI(TAG, "reconnect disabled");
   }
+}
+
+bool wifi_reconnect_is_connected()
+{
+  EventBits_t bits = xEventGroupGetBits(wifi_event_group);
+  return (bits & CONNECTED_BIT) != 0;
+}
+
+bool wifi_reconnect_is_ssid_stored()
+{
+  wifi_config_t conf;
+  return is_ssid_stored(conf);
 }
