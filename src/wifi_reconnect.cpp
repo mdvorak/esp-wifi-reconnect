@@ -39,7 +39,8 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t e
     ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
     ESP_LOGI(TAG, "got ip: " IPSTR, IP2STR(&event->ip_info.ip));
 
-    xEventGroupSetBits(wifi_event_group, CONNECTED_BIT);
+    // Mark as connected, also enable reconnect automatically
+    xEventGroupSetBits(wifi_event_group, CONNECTED_BIT | RECONNECT_BIT);
   }
 }
 
@@ -91,16 +92,12 @@ static void wifi_reconnect_task(void *)
   }
 }
 
-esp_err_t wifi_reconnect_start(bool enable, uint32_t connect_timeout)
+esp_err_t wifi_reconnect_start()
 {
   esp_err_t err;
 
   // Prepare event group
   wifi_event_group = xEventGroupCreate();
-
-  // Store config
-  wifi_reconnect_enable(enable);
-  ::connect_timeout = connect_timeout;
 
   // Register event handlers
   err = esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_STA_DISCONNECTED, &wifi_event_handler, NULL);

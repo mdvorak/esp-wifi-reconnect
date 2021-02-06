@@ -31,8 +31,9 @@ void setup()
 	ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
 	ESP_ERROR_CHECK(esp_wifi_start());
 
-	// Start reconnect
-	ESP_ERROR_CHECK(wifi_reconnect_start(true, WIFI_RECONNECT_CONNECT_TIMEOUT));
+	// Connect
+	ESP_ERROR_CHECK(wifi_reconnect_start()); // NOTE this must be called before connect, otherwise it might miss connected event
+	ESP_ERROR_CHECK(esp_wifi_connect());
 
 	// Setup complete
 	ESP_LOGI(TAG, "started");

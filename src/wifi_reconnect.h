@@ -10,11 +10,7 @@ extern "C"
 
     const uint32_t WIFI_RECONNECT_CONNECT_TIMEOUT = 15000;
 
-#ifdef __cplusplus
-    esp_err_t wifi_reconnect_start(bool enable = true, uint32_t connect_timeout = WIFI_RECONNECT_CONNECT_TIMEOUT);
-#else
-esp_err_t wifi_reconnect_start(bool enable, uint32_t connect_timeout);
-#endif
+    esp_err_t wifi_reconnect_start();
 
     void wifi_reconnect_enable(bool enable);
 
