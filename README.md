@@ -1,10 +1,10 @@
 TODO fix
 
-# esp-home-wifi
+# esp-wifi-reconnect
 
-![platformio build](https://github.com/mdvorak-iot/esp-home-wifi/workflows/platformio%20build/badge.svg)
+![platformio build](https://github.com/mdvorak-iot/esp-wifi-reconnect/workflows/platformio%20build/badge.svg)
 
-Manages WiFi connection and implements WPS for initial connection.
+TODO idf based only
 
 ## Usage
 
@@ -13,7 +13,7 @@ To reference this library, add following to the `platformio.ini` file as follows
 ```ini
 [env]
 lib_deps =
-    https://github.com/mdvorak-iot/esp-home-wifi.git#v1.1.0
+    https://github.com/mdvorak-iot/esp-wifi-reconnect#v1.0.0
 ```
 
 For code example, see [example/main.cpp](example/main.cpp)
