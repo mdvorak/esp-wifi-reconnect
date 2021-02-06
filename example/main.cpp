@@ -32,7 +32,7 @@ void setup()
 	ESP_ERROR_CHECK(esp_wifi_start());
 
 	// Start reconnect
-	ESP_ERROR_CHECK(wifi_reconnect_start());
+	ESP_ERROR_CHECK(wifi_reconnect_start(true, WIFI_RECONNECT_CONNECT_TIMEOUT));
 
 	// Setup complete
 	ESP_LOGI(TAG, "started");

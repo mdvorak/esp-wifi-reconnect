@@ -24,7 +24,7 @@ static bool is_ssid_stored()
 
 static bool should_reconnect()
 {
-  auto bits = xEventGroupGetBits(wifi_event_group);
+  EventBits_t bits = xEventGroupGetBits(wifi_event_group);
   return (bits & RECONNECT_BIT) != 0 && (bits & CONNECTED_BIT) == 0;
 }
 
@@ -37,7 +37,7 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t e
   }
   else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
   {
-    auto *event = static_cast<ip_event_got_ip_t *>(event_data);
+    ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
     ESP_LOGI(TAG, "got ip: " IPSTR, IP2STR(&event->ip_info.ip));
 
     xEventGroupSetBits(wifi_event_group, CONNECTED_BIT);
@@ -66,7 +66,7 @@ static void wifi_reconnect_task(void *)
 
       // Start reconnect
       ESP_LOGI(TAG, "auto reconnecting");
-      esp_wifi_connect();
+      ESP_ERROR_CHECK_WITHOUT_ABORT(esp_wifi_connect());
 
       // Wait for connection
       // NOTE here is the rare race-condition, if esp_wifi_connect() will succeed before calling wait, it will never pick up state change and it will timeout - which does not do any harm in the end
@@ -93,16 +93,23 @@ static void wifi_reconnect_task(void *)
 
 esp_err_t wifi_reconnect_start(bool enable, uint32_t connect_timeout)
 {
+  esp_err_t err;
+
   // Prepare event group
   wifi_event_group = xEventGroupCreate();
 
-  // Register event handlers
-  esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_STA_DISCONNECTED, &wifi_event_handler, NULL);
-  esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &wifi_event_handler, NULL);
-
-  // Set enabled flag
+  // Store config
   wifi_reconnect_enable(enable);
   ::connect_timeout = connect_timeout;
+
+  // Register event handlers
+  err = esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_STA_DISCONNECTED, &wifi_event_handler, NULL);
+  if (err != ESP_OK)
+    return err;
+
+  err = esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &wifi_event_handler, NULL);
+  if (err != ESP_OK)
+    return err;
 
   // Create background task
   auto ret = xTaskCreate(wifi_reconnect_task, "wifi_reconnect", 4096, nullptr, tskIDLE_PRIORITY + 1, nullptr);
