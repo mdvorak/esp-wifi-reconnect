@@ -15,9 +15,8 @@ static uint32_t connect_timeout = WIFI_RECONNECT_CONNECT_TIMEOUT;
 
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
 
-static bool is_ssid_stored()
+static bool is_ssid_stored(wifi_config_t &conf)
 {
-  wifi_config_t conf;
   esp_err_t err = esp_wifi_get_config(WIFI_IF_STA, &conf);
   return err == ESP_OK && conf.sta.ssid[0] != '\0';
 }
@@ -54,7 +53,8 @@ static void wifi_reconnect_task(void *)
   // Infinite task loop
   for (;;)
   {
-    if (should_reconnect() && is_ssid_stored())
+    wifi_config_t conf = {};
+    if (should_reconnect() && is_ssid_stored(conf))
     {
       // Simple back-off algorithm
       TickType_t waitFor = DELAYS[failures] * 1000;
@@ -65,7 +65,7 @@ static void wifi_reconnect_task(void *)
       vTaskDelay(waitFor / portTICK_PERIOD_MS);
 
       // Start reconnect
-      ESP_LOGI(TAG, "auto reconnecting");
+      ESP_LOGI(TAG, "auto reconnecting to %s", conf.sta.ssid);
       ESP_ERROR_CHECK_WITHOUT_ABORT(esp_wifi_connect());
 
       // Wait for connection
