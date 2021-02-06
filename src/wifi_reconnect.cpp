@@ -38,7 +38,7 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t e
   else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
   {
     auto *event = static_cast<ip_event_got_ip_t *>(event_data);
-    ESP_LOGI(TAG, "got IP: " IPSTR, IP2STR(&event->ip_info.ip));
+    ESP_LOGI(TAG, "got ip: " IPSTR, IP2STR(&event->ip_info.ip));
 
     xEventGroupSetBits(wifi_event_group, CONNECTED_BIT);
   }
@@ -49,7 +49,7 @@ static void wifi_reconnect_task(void *)
 {
   uint8_t failures = 0;
 
-  ESP_LOGI(TAG, "reconnect loop started, connection timeout %d ms", connect_timeout);
+  ESP_LOGI(TAG, "reconnect loop started, connect timeout %d ms", connect_timeout);
 
   // Infinite task loop
   for (;;)
@@ -69,18 +69,18 @@ static void wifi_reconnect_task(void *)
       esp_wifi_connect();
 
       // Wait for connection
-      // NOTE here is the rare race-condition, if esp_wifi_connect() will succeed before calling wait, it will never pick up state change and will timeout - which does not do any harm in the end
+      // NOTE here is the rare race-condition, if esp_wifi_connect() will succeed before calling wait, it will never pick up state change and it will timeout - which does not do any harm in the end
       bool connected = (xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT, pdFALSE, pdTRUE, connect_timeout / portTICK_PERIOD_MS) & CONNECTED_BIT) != 0;
 
       // Reset failures, if connected successfully
       if (connected)
       {
-        ESP_LOGI(TAG, "connected successfully");
         failures = 0;
+        ESP_LOGI(TAG, "connected successfully");
       }
       else
       {
-        ESP_LOGI(TAG, "connection timeout");
+        ESP_LOGI(TAG, "connect timeout");
       }
     }
     else

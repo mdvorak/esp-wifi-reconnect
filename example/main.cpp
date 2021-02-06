@@ -1,7 +1,9 @@
+#include <esp_netif.h>
 #include <esp_wifi.h>
 #include <esp_log.h>
 #include <wifi_reconnect.h>
 #include <nvs_flash.h>
+#include <string.h>
 
 void setup()
 {
@@ -29,7 +31,7 @@ void setup()
 	ESP_ERROR_CHECK(esp_wifi_start());
 
 	// Start reconnect
-	ESP_ERROR_CHECK(wifi_reconnect_start(true, 10000));
+	ESP_ERROR_CHECK(wifi_reconnect_start());
 
 	// Setup complete
 	ESP_LOGI("example", "started");
@@ -40,14 +42,11 @@ void loop()
 	vTaskDelay(1);
 }
 
-extern "C"
+extern "C" void app_main()
 {
-	void app_main()
+	setup();
+	for (;;)
 	{
-		setup();
-		for (;;)
-		{
-			loop();
-		}
+		loop();
 	}
 }
