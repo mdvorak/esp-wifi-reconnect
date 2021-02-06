@@ -112,7 +112,7 @@ esp_err_t wifi_reconnect_start(bool enable, uint32_t connect_timeout)
     return err;
 
   // Create background task
-  auto ret = xTaskCreate(wifi_reconnect_task, "wifi_reconnect", 4096, nullptr, tskIDLE_PRIORITY + 1, nullptr);
+  auto ret = xTaskCreate(wifi_reconnect_task, "wifi_reconnect", 4096, NULL, tskIDLE_PRIORITY + 1, NULL);
   return ret == pdPASS ? ESP_OK : ESP_FAIL;
 }
 
