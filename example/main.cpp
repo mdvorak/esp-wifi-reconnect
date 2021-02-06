@@ -4,7 +4,7 @@
 #include <wifi_reconnect.h>
 #include <nvs_flash.h>
 #include <double_reset.h>
-#include <auto_wps.h>
+#include <wps_config.h>
 
 static const char TAG[] = "example";
 
@@ -45,7 +45,7 @@ void setup()
 	if (!wifi_reconnect_is_ssid_stored() || reconfigure)
 	{
 		ESP_LOGI(TAG, "reconfigure request detected, starting WPS");
-		ESP_ERROR_CHECK(auto_wps_start());
+		ESP_ERROR_CHECK(wps_config_start());
 	}
 	else
 	{
