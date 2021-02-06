@@ -3,6 +3,7 @@
 #include <esp_log.h>
 #include <wifi_reconnect.h>
 #include <nvs_flash.h>
+#include <double_reset.h>
 #include <auto_wps.h>
 
 static const char TAG[] = "example";
@@ -21,6 +22,10 @@ void setup()
 	}
 	ESP_ERROR_CHECK(ret);
 
+	// Check double reset
+	bool reconfigure = false;
+	ESP_ERROR_CHECK(double_reset_start(&reconfigure, 5000));
+
 	// Initalize WiFi
 	ESP_ERROR_CHECK(esp_netif_init());
 	ESP_ERROR_CHECK(esp_event_loop_create_default());
@@ -32,9 +37,28 @@ void setup()
 	ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
 	ESP_ERROR_CHECK(esp_wifi_start());
 
-	// Connect
+	// Reconnection watch
 	ESP_ERROR_CHECK(wifi_reconnect_start()); // NOTE this must be called before connect, otherwise it might miss connected event
-	ESP_ERROR_CHECK(esp_wifi_connect());
+
+	// Start WPS if WiFi is not configured, or reconfiguration was requested
+	if (!wifi_reconnect_is_ssid_stored() || reconfigure)
+	{
+		ESP_LOGI(TAG, "reconfigure request detected, starting WPS");
+		ESP_ERROR_CHECK(auto_wps_start());
+	}
+	else
+	{
+		// Connect now
+		ESP_ERROR_CHECK(esp_wifi_connect());
+	}
+
+	// Wait for WiFi
+	ESP_LOGI(TAG, "waiting for wifi");
+	if (!wifi_reconnect_wait_for_connection(AUTO_WPS_TIMEOUT_MS + WIFI_RECONNECT_CONNECT_TIMEOUT_MS))
+	{
+		ESP_LOGE(TAG, "failed to connect to wifi!");
+		// NOTE either fallback into emergency operation mode, do nothing, restart..
+	}
 
 	// Setup complete
 	ESP_LOGI(TAG, "started");

@@ -11,7 +11,7 @@ static const int RECONNECT_BIT = BIT0;
 static const int CONNECTED_BIT = BIT1;
 
 static EventGroupHandle_t wifi_event_group;
-static uint32_t connect_timeout = WIFI_RECONNECT_CONNECT_TIMEOUT;
+static uint32_t connect_timeout = WIFI_RECONNECT_CONNECT_TIMEOUT_MS;
 
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
 
@@ -51,6 +51,9 @@ static void wifi_reconnect_task(void *)
 
   ESP_LOGI(TAG, "reconnect loop started, connect timeout %d ms", connect_timeout);
 
+  // Wait before looping
+  xEventGroupWaitBits(wifi_event_group, RECONNECT_BIT, pdFALSE, pdTRUE, connect_timeout / portTICK_PERIOD_MS);
+
   // Infinite task loop
   for (;;)
   {
@@ -70,7 +73,6 @@ static void wifi_reconnect_task(void *)
       ESP_ERROR_CHECK_WITHOUT_ABORT(esp_wifi_connect());
 
       // Wait for connection
-      // NOTE here is the rare race-condition, if esp_wifi_connect() will succeed before calling wait, it will never pick up state change and it will timeout - which does not do any harm in the end
       bool connected = (xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT, pdFALSE, pdTRUE, connect_timeout / portTICK_PERIOD_MS) & CONNECTED_BIT) != 0;
 
       // Reset failures, if connected successfully
@@ -127,14 +129,20 @@ void wifi_reconnect_enable(bool enable)
   }
 }
 
+bool wifi_reconnect_is_ssid_stored()
+{
+  wifi_config_t conf;
+  return is_ssid_stored(conf);
+}
+
 bool wifi_reconnect_is_connected()
 {
   EventBits_t bits = xEventGroupGetBits(wifi_event_group);
   return (bits & CONNECTED_BIT) != 0;
 }
 
-bool wifi_reconnect_is_ssid_stored()
+bool wifi_reconnect_wait_for_connection(uint32_t timeout_ms)
 {
-  wifi_config_t conf;
-  return is_ssid_stored(conf);
+  EventBits_t bits = xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT, pdFALSE, pdTRUE, timeout_ms / portTICK_PERIOD_MS);
+  return (bits & CONNECTED_BIT) != 0;
 }

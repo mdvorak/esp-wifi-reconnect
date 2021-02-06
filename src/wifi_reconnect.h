@@ -8,7 +8,7 @@ extern "C"
 {
 #endif
 
-    const uint32_t WIFI_RECONNECT_CONNECT_TIMEOUT = 15000;
+    const uint32_t WIFI_RECONNECT_CONNECT_TIMEOUT_MS = 15000;
 
     esp_err_t wifi_reconnect_start();
 
@@ -24,9 +24,11 @@ extern "C"
         wifi_reconnect_enable(true);
     }
 
+    bool wifi_reconnect_is_ssid_stored();
+
     bool wifi_reconnect_is_connected();
 
-    bool wifi_reconnect_is_ssid_stored();
+    bool wifi_reconnect_wait_for_connection(uint32_t timeout_ms);
 
 #ifdef __cplusplus
 }
