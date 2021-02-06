@@ -3,7 +3,9 @@
 
 #include <esp_err.h>
 
-esp_err_t wifi_reconnect_init(bool enable = true);
+const uint32_t WIFI_RECONNECT_CONNECT_TIMEOUT = 15000;
+
+esp_err_t wifi_reconnect_start(bool enable = true, uint32_t connect_timeout = WIFI_RECONNECT_CONNECT_TIMEOUT);
 
 void wifi_reconnect_enable(bool enable);
 
