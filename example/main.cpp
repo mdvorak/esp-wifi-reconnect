@@ -25,7 +25,7 @@ void setup()
 	// Check double reset
 	// NOTE this should be called as soon as possible, ideally right after nvs init
 	bool reconfigure = false;
-	ESP_ERROR_CHECK(double_reset_start(&reconfigure, 5000));
+	ESP_ERROR_CHECK(double_reset_start(&reconfigure, DOUBLE_RESET_DEFAULT_TIMEOUT));
 
 	// Initalize WiFi
 	ESP_ERROR_CHECK(esp_netif_init());
@@ -62,6 +62,7 @@ void setup()
 		ESP_LOGE(TAG, "failed to connect to wifi!");
 		// NOTE either fallback into emergency operation mode, do nothing, restart..
 	}
+
 	// Resume reconnect if WPS failed
 	wifi_reconnect_resume();
 
