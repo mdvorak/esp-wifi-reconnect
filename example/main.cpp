@@ -42,12 +42,11 @@ void setup()
 	ESP_ERROR_CHECK(wifi_reconnect_start()); // NOTE this must be called before esp_wifi_connect, otherwise it might miss connected event
 
 	// Start WPS if WiFi is not configured, or reconfiguration was requested
-	uint32_t wifi_timeout = WIFI_RECONNECT_CONNECT_TIMEOUT_MS;
 	if (!wifi_reconnect_is_ssid_stored() || reconfigure)
 	{
-		ESP_LOGI(TAG, "reconfigure request detected, starting WPS");
+		ESP_LOGI(TAG, "reconfigure request detected, waiting for wps");
 		ESP_ERROR_CHECK(wps_config_start());
-		wifi_timeout += AUTO_WPS_TIMEOUT_MS;
+		wifi_reconnect_wait_for_connection(WPS_CONFIG_TIMEOUT_MS);
 	}
 	else
 	{
@@ -57,7 +56,7 @@ void setup()
 
 	// Wait for WiFi
 	ESP_LOGI(TAG, "waiting for wifi");
-	if (!wifi_reconnect_wait_for_connection(wifi_timeout))
+	if (!wifi_reconnect_wait_for_connection(WIFI_RECONNECT_CONNECT_TIMEOUT_MS))
 	{
 		ESP_LOGE(TAG, "failed to connect to wifi!");
 		// NOTE either fallback into emergency operation mode, do nothing, restart..
