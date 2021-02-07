@@ -67,7 +67,7 @@ _Noreturn static void wifi_reconnect_task(void *)
       // Delay
       if (waitFor > 0)
       {
-        ESP_LOGI(TAG, "waiting approx %d ms", waitFor);
+        ESP_LOGI(TAG, "waiting for %d ms", waitFor);
         vTaskDelay(waitFor / portTICK_PERIOD_MS);
       }
 
