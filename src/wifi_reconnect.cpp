@@ -5,8 +5,8 @@
 
 static const char TAG[] = "wifi_reconnect";
 
-// Reconnect exponential backoff, in seconds
-static const uint8_t DELAYS[] = {1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233};
+// Reconnect incremental backoff, in seconds
+static const uint8_t DELAYS[] = {0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233};
 static const int RECONNECT_BIT = BIT0;
 static const int CONNECTED_BIT = BIT1;
 
@@ -65,11 +65,14 @@ _Noreturn static void wifi_reconnect_task(void *)
       failures = MIN(sizeof(DELAYS) / sizeof(uint8_t) - 1, failures + 1);
 
       // Delay
-      ESP_LOGI(TAG, "waiting approx %d ms", waitFor);
-      vTaskDelay(waitFor / portTICK_PERIOD_MS);
+      if (waitFor > 0)
+      {
+        ESP_LOGI(TAG, "waiting approx %d ms", waitFor);
+        vTaskDelay(waitFor / portTICK_PERIOD_MS);
+      }
 
       // Start reconnect
-      ESP_LOGI(TAG, "auto reconnecting to %s", conf.sta.ssid);
+      ESP_LOGI(TAG, "connecting to '%s'", conf.sta.ssid);
       ESP_ERROR_CHECK_WITHOUT_ABORT(esp_wifi_connect());
 
       // Wait for connection
