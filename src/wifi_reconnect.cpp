@@ -103,6 +103,7 @@ esp_err_t wifi_reconnect_start()
 
   // Prepare event group
   wifi_event_group = xEventGroupCreate();
+  configASSERT(wifi_event_group);
 
   // Register event handlers
   err = esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_STA_DISCONNECTED, &wifi_event_handler, NULL);
