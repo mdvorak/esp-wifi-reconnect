@@ -3,12 +3,14 @@
 
 #include <esp_err.h>
 
+#ifndef WIFI_RECONNECT_CONNECT_TIMEOUT_MS
+#define WIFI_RECONNECT_CONNECT_TIMEOUT_MS CONFIG_WIFI_RECONNECT_CONNECT_TIMEOUT_MS
+#endif
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-
-    const uint32_t WIFI_RECONNECT_CONNECT_TIMEOUT_MS = 15000;
 
     esp_err_t wifi_reconnect_start();
 

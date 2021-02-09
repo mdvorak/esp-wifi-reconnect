@@ -1,0 +1,7 @@
+menu "WiFi Reconnect"
+    config WIFI_RECONNECT_CONNECT_TIMEOUT_MS
+        int "Timeout for establishing connection to WiFi"
+        default 15000
+        help
+            Timeout for establishing connection to WiFi, in milliseconds.
+endmenu
