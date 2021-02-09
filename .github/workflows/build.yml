@@ -14,17 +14,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: Set up Python
         uses: actions/setup-python@v1
         with:
           python-version: 3.8
+
       - name: Install platformio
         run: |
           python -m pip install --upgrade pip
           pip install --upgrade platformio
+
       - name: Check
-        run: |
-          platformio check
+        run: platformio check -d example
+
       - name: Build
-        run: |
-          platformio run -e espidf
+        run: platformio run -d example
