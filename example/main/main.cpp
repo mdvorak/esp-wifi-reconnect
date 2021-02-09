@@ -48,6 +48,7 @@ void setup()
 	{
 		ESP_LOGI(TAG, "reconfigure request detected, waiting for wps");
 		ESP_ERROR_CHECK(wps_config_start());
+		// Wait for WPS to finish
 		wifi_reconnect_wait_for_connection(WPS_CONFIG_TIMEOUT_MS);
 	}
 
