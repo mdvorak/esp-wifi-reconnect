@@ -1,6 +1,7 @@
 #include "wifi_reconnect.h"
 #include <esp_log.h>
 #include <esp_wifi.h>
+#include <freertos/portmacro.h>
 #include <freertos/event_groups.h>
 
 static const char TAG[] = "wifi_reconnect";
@@ -21,9 +22,10 @@ static inline bool is_ssid_stored(wifi_config_t &conf)
   return err == ESP_OK && conf.sta.ssid[0] != '\0';
 }
 
-static bool should_reconnect()
+static bool wait_for_reconnect()
 {
-  EventBits_t bits = xEventGroupGetBits(wifi_event_group);
+  // NOTE this will return immediately, if RECONNECT_BIT is already set
+  EventBits_t bits = xEventGroupWaitBits(wifi_event_group, RECONNECT_BIT, pdFALSE, pdTRUE, portMAX_DELAY);
   return (bits & RECONNECT_BIT) != 0 && (bits & CONNECTED_BIT) == 0;
 }
 
@@ -51,14 +53,11 @@ _Noreturn static void wifi_reconnect_task(void *)
 
   ESP_LOGI(TAG, "reconnect loop started, connect timeout %d ms", connect_timeout);
 
-  // Wait before looping
-  xEventGroupWaitBits(wifi_event_group, RECONNECT_BIT, pdFALSE, pdTRUE, connect_timeout / portTICK_PERIOD_MS);
-
   // Infinite task loop
   for (;;)
   {
     wifi_config_t conf = {};
-    if (should_reconnect() && is_ssid_stored(conf))
+    if (wait_for_reconnect() && is_ssid_stored(conf))
     {
       // Simple back-off algorithm
       TickType_t waitFor = DELAYS[failures] * 1000;
