@@ -50,11 +50,9 @@ void setup()
 		ESP_ERROR_CHECK(wps_config_start());
 		wifi_reconnect_wait_for_connection(WPS_CONFIG_TIMEOUT_MS);
 	}
-	else
-	{
-		// Connect now
-		wifi_reconnect_resume();
-	}
+
+	// Connect now (needs to be called after WPS)
+	wifi_reconnect_resume();
 
 	// Wait for WiFi
 	ESP_LOGI(TAG, "waiting for wifi");
@@ -63,9 +61,6 @@ void setup()
 		ESP_LOGE(TAG, "failed to connect to wifi!");
 		// NOTE either fallback into emergency operation mode, do nothing, restart..
 	}
-
-	// Resume reconnect if WPS failed
-	wifi_reconnect_resume();
 
 	// Setup complete
 	ESP_LOGI(TAG, "started");
