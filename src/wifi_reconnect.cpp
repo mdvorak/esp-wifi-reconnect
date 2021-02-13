@@ -11,6 +11,7 @@ static const char TAG[] = "wifi_reconnect";
 static const uint8_t DELAYS[] = {0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233};
 static const int RECONNECT_BIT = BIT0;
 static const int CONNECTED_BIT = BIT1;
+static const int NOT_CONNECTED_BIT = BIT2; // Negative state is used for wait_for_reconnect, to avoid state polling
 
 static EventGroupHandle_t wifi_event_group;
 static uint32_t connect_timeout = WIFI_RECONNECT_CONNECT_TIMEOUT_MS;
@@ -26,8 +27,8 @@ static inline bool is_ssid_stored(wifi_config_t &conf)
 static bool wait_for_reconnect()
 {
   // NOTE this will return immediately, if RECONNECT_BIT is already set
-  EventBits_t bits = xEventGroupWaitBits(wifi_event_group, RECONNECT_BIT, pdFALSE, pdTRUE, portMAX_DELAY);
-  return (bits & RECONNECT_BIT) != 0 && (bits & CONNECTED_BIT) == 0;
+  EventBits_t bits = xEventGroupWaitBits(wifi_event_group, RECONNECT_BIT | NOT_CONNECTED_BIT, pdFALSE, pdTRUE, portMAX_DELAY);
+  return (bits & RECONNECT_BIT) != 0 && (bits & NOT_CONNECTED_BIT) != 0;
 }
 
 static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
@@ -36,6 +37,7 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t e
   {
     ESP_LOGI(TAG, "disconnected");
     xEventGroupClearBits(wifi_event_group, CONNECTED_BIT);
+    xEventGroupSetBits(wifi_event_group, NOT_CONNECTED_BIT);
   }
   else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
   {
@@ -43,6 +45,7 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t e
     ESP_LOGI(TAG, "got ip: " IPSTR, IP2STR(&event->ip_info.ip));
 
     // Mark as connected, also enable reconnect automatically
+    xEventGroupClearBits(wifi_event_group, NOT_CONNECTED_BIT);
     xEventGroupSetBits(wifi_event_group, CONNECTED_BIT | RECONNECT_BIT);
   }
 }
@@ -55,6 +58,7 @@ _Noreturn static void wifi_reconnect_task(void *)
   ESP_LOGI(TAG, "reconnect loop started, connect timeout %d ms", connect_timeout);
 
   uint8_t failures = 0;
+
   // Infinite task loop
   for (;;)
   {
@@ -105,6 +109,7 @@ esp_err_t wifi_reconnect_start()
   // Prepare event group
   wifi_event_group = xEventGroupCreate();
   configASSERT(wifi_event_group);
+  xEventGroupSetBits(wifi_event_group, NOT_CONNECTED_BIT); // Negative bit must be set immediately
 
   // Register event handlers
   err = esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_STA_DISCONNECTED, &wifi_event_handler, NULL);
