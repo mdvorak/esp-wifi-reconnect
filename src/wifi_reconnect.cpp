@@ -4,6 +4,7 @@
 #include <esp_wifi.h>
 #include <freertos/portmacro.h>
 #include <freertos/event_groups.h>
+#include "sdkconfig.h"
 
 static const char TAG[] = "wifi_reconnect";
 
@@ -26,8 +27,12 @@ static inline bool is_ssid_stored(wifi_config_t &conf)
 
 static bool wait_for_reconnect()
 {
+  printf("WAITING...\n");
   // NOTE this will return immediately, if RECONNECT_BIT is already set
-  EventBits_t bits = xEventGroupWaitBits(wifi_event_group, RECONNECT_BIT | NOT_CONNECTED_BIT, pdFALSE, pdTRUE, portMAX_DELAY);
+  // NOTE don't wait for more then WDT timeout
+  // TODO this sucks, why xEventGroupWaitBits does not feed WDT?
+  EventBits_t bits = xEventGroupWaitBits(wifi_event_group, RECONNECT_BIT | NOT_CONNECTED_BIT, pdFALSE, pdTRUE, CONFIG_ESP_TASK_WDT_TIMEOUT_S * 1000 / 2 / portTICK_PERIOD_MS);
+  printf("GOT BITS OR TIMEOUT...\n");
   return (bits & RECONNECT_BIT) != 0 && (bits & NOT_CONNECTED_BIT) != 0;
 }
 
@@ -50,7 +55,6 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t e
   }
 }
 
-// NOTE it is intentionally done via background task, and not using events, since it is more reliable
 _Noreturn static void wifi_reconnect_task(void *)
 {
   // Enable Watchdog - it should spend almost all time in sleep, therefore it should be never triggered
@@ -62,6 +66,8 @@ _Noreturn static void wifi_reconnect_task(void *)
   // Infinite task loop
   for (;;)
   {
+    esp_task_wdt_reset();
+
     wifi_config_t conf = {};
     if (wait_for_reconnect() && is_ssid_stored(conf))
     {
@@ -153,6 +159,7 @@ bool wifi_reconnect_is_connected()
 
 bool wifi_reconnect_wait_for_connection(uint32_t timeout_ms)
 {
+  // TODO test, if xEventGroupWaitBits does not feed WDT here? guess not..
   EventBits_t bits = xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT, pdFALSE, pdTRUE, timeout_ms / portTICK_PERIOD_MS);
   return (bits & CONNECTED_BIT) != 0;
 }
