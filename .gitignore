@@ -1,10 +1,9 @@
-.pio
+.pio/
 .vscode/
 .idea/
 *.iml
 CMakeListsPrivate.txt
-/cmake-build-*/
-.vscode/settings.json
+cmake-build-*/
+build/
 sdkconfig
 sdkconfig.old
-build/
