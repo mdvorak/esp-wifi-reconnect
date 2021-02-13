@@ -7,3 +7,4 @@ CMakeListsPrivate.txt
 .vscode/settings.json
 sdkconfig
 sdkconfig.old
+build/
