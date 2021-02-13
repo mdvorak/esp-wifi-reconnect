@@ -1,5 +1,6 @@
 #include "wifi_reconnect.h"
 #include <esp_log.h>
+#include <esp_task_wdt.h>
 #include <esp_wifi.h>
 #include <freertos/portmacro.h>
 #include <freertos/event_groups.h>
@@ -49,10 +50,11 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t e
 // NOTE it is intentionally done via background task, and not using events, since it is more reliable
 _Noreturn static void wifi_reconnect_task(void *)
 {
-  uint8_t failures = 0;
-
+  // Enable Watchdog - it should spend almost all time in sleep, therefore it should be never triggered
+  ESP_ERROR_CHECK_WITHOUT_ABORT(esp_task_wdt_add(NULL));
   ESP_LOGI(TAG, "reconnect loop started, connect timeout %d ms", connect_timeout);
 
+  uint8_t failures = 0;
   // Infinite task loop
   for (;;)
   {
