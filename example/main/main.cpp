@@ -1,6 +1,7 @@
 #include <esp_netif.h>
 #include <esp_wifi.h>
 #include <esp_log.h>
+#include <esp_task_wdt.h>
 #include <nvs_flash.h>
 #include <double_reset.h>
 #include <wps_config.h>
@@ -10,9 +11,6 @@ static const char TAG[] = "example";
 
 static void setup()
 {
-	esp_log_level_set("wifi", ESP_LOG_WARN);
-	esp_log_level_set("wifi_reconnect", ESP_LOG_DEBUG);
-
 	// Initialize NVS
 	esp_err_t ret = nvs_flash_init();
 	if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
@@ -73,6 +71,8 @@ static void run()
 
 extern "C" void app_main()
 {
+	esp_task_wdt_add(NULL);
+
 	setup();
 	run();
 }
