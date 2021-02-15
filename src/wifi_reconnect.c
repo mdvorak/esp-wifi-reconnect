@@ -19,10 +19,10 @@ static uint32_t connect_timeout = WIFI_RECONNECT_CONNECT_TIMEOUT_MS;
 
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
 
-static inline bool is_ssid_stored(wifi_config_t &conf)
+static inline bool is_ssid_stored(wifi_config_t *conf)
 {
-  esp_err_t err = esp_wifi_get_config(WIFI_IF_STA, &conf);
-  return err == ESP_OK && conf.sta.ssid[0] != '\0';
+  esp_err_t err = esp_wifi_get_config(WIFI_IF_STA, conf);
+  return err == ESP_OK && conf->sta.ssid[0] != '\0';
 }
 
 static bool wait_for_reconnect()
@@ -53,7 +53,7 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t e
   }
 }
 
-_Noreturn static void wifi_reconnect_task(void *)
+_Noreturn static void wifi_reconnect_task(void *unused)
 {
   // Enable Watchdog - it should spend almost all time in sleep, therefore it should be never triggered
   ESP_ERROR_CHECK_WITHOUT_ABORT(esp_task_wdt_add(NULL));
@@ -67,7 +67,7 @@ _Noreturn static void wifi_reconnect_task(void *)
     esp_task_wdt_reset();
 
     wifi_config_t conf = {};
-    if (wait_for_reconnect() && is_ssid_stored(conf))
+    if (wait_for_reconnect() && is_ssid_stored(&conf))
     {
       // Simple back-off algorithm
       TickType_t waitFor = DELAYS[failures] * 1000;
@@ -125,7 +125,7 @@ esp_err_t wifi_reconnect_start()
     return err;
 
   // Create background task
-  auto ret = xTaskCreate(wifi_reconnect_task, "wifi_reconnect", 4096, NULL, tskIDLE_PRIORITY + 1, NULL);
+  BaseType_t ret = xTaskCreate(wifi_reconnect_task, "wifi_reconnect", 4096, NULL, tskIDLE_PRIORITY + 1, NULL);
   return ret == pdPASS ? ESP_OK : ESP_FAIL;
 }
 
@@ -146,7 +146,7 @@ void wifi_reconnect_enable(bool enable)
 bool wifi_reconnect_is_ssid_stored()
 {
   wifi_config_t conf;
-  return is_ssid_stored(conf);
+  return is_ssid_stored(&conf);
 }
 
 bool wifi_reconnect_is_connected()
