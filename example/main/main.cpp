@@ -1,7 +1,6 @@
 #include <esp_netif.h>
 #include <esp_wifi.h>
 #include <esp_log.h>
-#include <esp_task_wdt.h>
 #include <nvs_flash.h>
 #include <double_reset.h>
 #include <wps_config.h>
@@ -33,7 +32,7 @@ static void setup()
 	esp_netif_t *sta_netif = esp_netif_create_default_wifi_sta();
 	assert(sta_netif);
 	wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-	ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+	ESP_ERROR_CHECK(esp_wifi_init(&cfg)); 
 	ESP_ERROR_CHECK(esp_wifi_set_storage(WIFI_STORAGE_FLASH));
 	ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
 	ESP_ERROR_CHECK(esp_wifi_start());
@@ -71,8 +70,6 @@ static void run()
 
 extern "C" void app_main()
 {
-	esp_task_wdt_add(NULL);
-
 	setup();
 	run();
 }

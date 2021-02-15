@@ -55,10 +55,7 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t e
 
 _Noreturn static void wifi_reconnect_task(void *unused)
 {
-  // Enable Watchdog - it should spend almost all time in sleep, therefore it should be never triggered
-  ESP_ERROR_CHECK_WITHOUT_ABORT(esp_task_wdt_add(NULL));
   ESP_LOGI(TAG, "reconnect loop started, connect timeout %d ms", connect_timeout);
-
   uint8_t failures = 0;
 
   // Infinite task loop
@@ -157,7 +154,6 @@ bool wifi_reconnect_is_connected()
 
 bool wifi_reconnect_wait_for_connection(uint32_t timeout_ms)
 {
-  // TODO test, if xEventGroupWaitBits does not feed WDT here? guess not..
   EventBits_t bits = xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT, pdFALSE, pdTRUE, timeout_ms / portTICK_PERIOD_MS);
   return (bits & CONNECTED_BIT) != 0;
 }
