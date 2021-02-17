@@ -29,8 +29,8 @@ jobs:
           
       - name: Check
         run: |
-          platformio check
+          platformio check -d example
           
       - name: Build
         run: |
-          platformio run -e debug
+          platformio run -d example -e debug
