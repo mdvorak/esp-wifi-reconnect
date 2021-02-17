@@ -33,4 +33,4 @@ jobs:
           
       - name: Build
         run: |
-          platformio run -d example -e debug
+          platformio run -d example
