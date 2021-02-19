@@ -136,6 +136,16 @@ void wifi_reconnect_enable(bool enable)
     }
 }
 
+inline void wifi_reconnect_pause()
+{
+    wifi_reconnect_enable(false);
+}
+
+inline void wifi_reconnect_resume()
+{
+    wifi_reconnect_enable(true);
+}
+
 bool wifi_reconnect_is_ssid_stored()
 {
     wifi_config_t conf;
