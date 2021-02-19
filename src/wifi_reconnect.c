@@ -51,7 +51,7 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t e
 
 _Noreturn static void wifi_reconnect_task(void *unused)
 {
-    ESP_LOGI(TAG, "reconnect loop started, connect timeout %d ms", connect_timeout);
+    ESP_LOGI(TAG, "wifi reconnect started");
     uint8_t failures = 0;
 
     // Infinite task loop
@@ -74,7 +74,7 @@ _Noreturn static void wifi_reconnect_task(void *unused)
             }
 
             // Start reconnect
-            ESP_LOGI(TAG, "connecting to '%s'", conf.sta.ssid);
+            ESP_LOGI(TAG, "connecting to '%s', timeout %d ms", conf.sta.ssid, connect_timeout);
             ESP_ERROR_CHECK_WITHOUT_ABORT(esp_wifi_connect());
 
             // Wait for connection
