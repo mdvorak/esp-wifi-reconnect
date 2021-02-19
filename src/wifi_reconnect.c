@@ -25,10 +25,8 @@ static inline bool is_ssid_stored(wifi_config_t *conf)
 
 static bool wait_for_reconnect()
 {
-    // NOTE this will return immediately, if RECONNECT_BIT is already set
-    // NOTE don't wait for more then WDT timeout
-    // TODO this sucks, why xEventGroupWaitBits does not feed WDT?
-    EventBits_t bits = xEventGroupWaitBits(wifi_event_group, RECONNECT_BIT | NOT_CONNECTED_BIT, pdFALSE, pdTRUE, CONFIG_ESP_TASK_WDT_TIMEOUT_S * 1000 / 2 / portTICK_PERIOD_MS);
+    // NOTE this will return immediately, if both bits are already set
+    EventBits_t bits = xEventGroupWaitBits(wifi_event_group, RECONNECT_BIT | NOT_CONNECTED_BIT, pdFALSE, pdTRUE, portMAX_DELAY);
     return (bits & RECONNECT_BIT) != 0 && (bits & NOT_CONNECTED_BIT) != 0;
 }
 
