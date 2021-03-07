@@ -8,7 +8,7 @@ function(ExternalComponent_Get name git_repository git_ref)
             SOURCE_DIR ${CMAKE_BINARY_DIR}/_components/${name})
     FetchContent_GetProperties(${name})
     string(TOLOWER ${name} nameLower)
-    if (NOT ${name}_POPULATED)
+    if (NOT ${nameLower}_POPULATED)
         FetchContent_Populate(${name})
     endif ()
 
