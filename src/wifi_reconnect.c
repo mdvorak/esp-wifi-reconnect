@@ -6,11 +6,13 @@
 
 static const char TAG[] = "wifi_reconnect";
 
-// Reconnect incremental backoff, in seconds
+/** Reconnect incremental backoff, in seconds */
 static const uint8_t DELAYS[] = {0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233};
-static const int RECONNECT_BIT = BIT0;
-static const int CONNECTED_BIT = BIT1;
-static const int NOT_CONNECTED_BIT = BIT2; // Negative state is used for wait_for_reconnect, to avoid state polling
+
+#define RECONNECT_BIT BIT0
+#define CONNECTED_BIT BIT1
+/** Negative state is used for wait_for_reconnect, to avoid state polling */
+#define NOT_CONNECTED_BIT BIT2
 
 static EventGroupHandle_t wifi_event_group;
 static uint32_t connect_timeout = WIFI_RECONNECT_CONNECT_TIMEOUT_MS;
