@@ -136,14 +136,16 @@ void wifi_reconnect_enable(bool enable)
     }
 }
 
-inline void wifi_reconnect_pause()
+esp_err_t wifi_reconnect_pause()
 {
     wifi_reconnect_enable(false);
+    return ESP_OK;
 }
 
-inline void wifi_reconnect_resume()
+esp_err_t wifi_reconnect_resume()
 {
     wifi_reconnect_enable(true);
+    return ESP_OK;
 }
 
 bool wifi_reconnect_is_ssid_stored()

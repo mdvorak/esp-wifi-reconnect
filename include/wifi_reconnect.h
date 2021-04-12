@@ -16,9 +16,9 @@ esp_err_t wifi_reconnect_start();
 
 void wifi_reconnect_enable(bool enable);
 
-void wifi_reconnect_resume();
+esp_err_t wifi_reconnect_resume();
 
-void wifi_reconnect_pause();
+esp_err_t wifi_reconnect_pause();
 
 bool wifi_reconnect_is_ssid_stored();
 
