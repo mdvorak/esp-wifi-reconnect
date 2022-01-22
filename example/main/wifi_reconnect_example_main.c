@@ -8,7 +8,7 @@
 
 static const char TAG[] = "example";
 
-static void setup()
+_Noreturn void app_main()
 {
     // Initialize NVS
     esp_err_t ret = nvs_flash_init();
@@ -27,7 +27,7 @@ static void setup()
     // Events
     ESP_ERROR_CHECK(esp_event_loop_create_default());
 
-    // Initalize WiFi
+    // Initialize Wi-Fi
     ESP_ERROR_CHECK(esp_netif_init());
     esp_netif_t *sta_netif = esp_netif_create_default_wifi_sta();
     assert(sta_netif);
@@ -38,9 +38,9 @@ static void setup()
     ESP_ERROR_CHECK(esp_wifi_start());
 
     // Reconnection watch
-    ESP_ERROR_CHECK(wifi_reconnect_start()); // NOTE this must be called before esp_wifi_connect, otherwise it might miss connected event
+    ESP_ERROR_CHECK(wifi_reconnect_start()); // NOTE this must be called before esp_wifi_connect, otherwise it might miss a connected event
 
-    // Start WPS if WiFi is not configured, or reconfiguration was requested
+    // Start WPS if Wi-Fi is not configured, or reconfiguration was requested
     if (!wifi_reconnect_is_ssid_stored() || reconfigure)
     {
         ESP_LOGI(TAG, "reconfigure request detected, waiting for wps");
@@ -52,7 +52,7 @@ static void setup()
     // Connect now (needs to be called after WPS)
     wifi_reconnect_resume();
 
-    // Wait for WiFi
+    // Wait for Wi-Fi
     ESP_LOGI(TAG, "waiting for wifi");
     if (!wifi_reconnect_wait_for_connection(WIFI_RECONNECT_CONNECT_TIMEOUT_MS))
     {
@@ -62,14 +62,9 @@ static void setup()
 
     // Setup complete
     ESP_LOGI(TAG, "started");
-}
 
-static void run()
-{
-}
-
-extern "C" void app_main()
-{
-    setup();
-    run();
+    while (true)
+    {
+        vTaskDelay(1);
+    }
 }
