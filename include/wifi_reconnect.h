@@ -3,6 +3,7 @@
 
 #include <esp_err.h>
 #include <stdbool.h>
+#include "sdkconfig.h"
 
 #ifndef WIFI_RECONNECT_CONNECT_TIMEOUT_MS
 #define WIFI_RECONNECT_CONNECT_TIMEOUT_MS CONFIG_WIFI_RECONNECT_CONNECT_TIMEOUT_MS

@@ -1,8 +1,6 @@
-name: "wifi_reconnect"
-description: Manages WiFi connection.
+name: wifi_reconnect
+description: Manages Wi-Fi connection, with incremental back-off.
 url: https://github.com/mdvorak-iot/esp-wifi-reconnect.git
-targets:
-  - esp32
 dependencies:
   idf:
     version: ">=4.1"

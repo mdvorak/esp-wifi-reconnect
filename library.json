@@ -1,6 +1,6 @@
 {
-    "name": "esp-wifi-reconnect",
-    "description": "Manages WiFi connection.",
+    "name": "wifi-reconnect",
+    "description": "Manages Wi-Fi connection, with incremental back-off.",
     "keywords": "esp esp32 wifi reconnect",
     "repository": {
         "type": "git",

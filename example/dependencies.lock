@@ -1,0 +1,21 @@
+dependencies:
+  double_reset:
+    component_hash: 8941731fcd3a3f874b86a8376f888f9383b1ff7c9cd5520f2294a8a49b87d03f
+    source:
+      git: https://github.com/mdvorak-iot/esp-double-reset.git
+      type: git
+    version: 4bc24d2440e43e2b67fb9f38f95f3ee34269a3b9
+  idf:
+    component_hash: null
+    source:
+      type: idf
+    version: 4.3.2
+  wps_config:
+    component_hash: 8849711702131900db57f1ac4b9d1f06c7d2c03d8fe850d810ee3723e37ac7c2
+    source:
+      git: https://github.com/mdvorak-iot/esp-wps-config.git
+      type: git
+    version: 834ba3106dc7de6d6795bc34f96acae2d670fa17
+manifest_hash: 1c2e9c133bd8c0de07cf6fae9d2c8a27ed77971597548e5ce4d7d3e86ae1f13a
+target: esp32
+version: 1.0.0

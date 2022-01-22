@@ -1,0 +1,8 @@
+## IDF Component Manager Manifest File
+dependencies:
+  idf:
+    version: ">=4.1.0"
+  double_reset:
+    git: https://github.com/mdvorak-iot/esp-double-reset.git
+  wps_config:
+    git: https://github.com/mdvorak-iot/esp-wps-config.git
