@@ -35,7 +35,7 @@ idf.py menuconfig
 Flash it via (in the example dir)
 
 ```
-idf.py -b 921600 build flash monitor
+idf.py build flash monitor
 ```
 
 As an alternative, you can use [PlatformIO](https://docs.platformio.org/en/latest/core/installation.html) to build and
