@@ -37,7 +37,7 @@ jobs:
       - name: Setup Component Manager
         run: |
           . ${IDF_PATH}/export.sh
-          pip install idf-component-manager --upgrade
+          pip install --upgrade idf-component-manager
 
       - name: Build
         env:
@@ -64,7 +64,7 @@ jobs:
 
       - name: Setup Component Manager
         run: |
-          pip install idf-component-manager --upgrade
+          pip install --upgrade idf-component-manager
 
       - name: Build
         run: platformio run -d example
