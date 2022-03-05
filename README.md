@@ -1,6 +1,6 @@
 # wifi_reconnect
 
-[![build](https://github.com/mdvorak/esp-wifi-reconnect/actions/workflows/build.yml/badge.svg)](https://github.com/mdvorak/esp-wifi-reconnect/actions/workflows/build.yml)
+[![test](https://github.com/mdvorak/esp-wifi-reconnect/actions/workflows/test.yml/badge.svg)](https://github.com/mdvorak/esp-wifi-reconnect/actions/workflows/test.yml)
 
 Manages Wi-Fi connection, with incremental back-off.
 
